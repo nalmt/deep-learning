@@ -2,6 +2,7 @@
 # !/usr/bin/env python
 import gzip, numpy, torch
 
+BATCH_SIZE = 5
 ETA = 0.00001 # taux d'apprentissage
 
 def sigmoid_activation(s):
@@ -12,16 +13,17 @@ def linear_activation(s):
 
 class Layer:
     def __init__(self, number_of_neurons, activation_function):
-        self.y = torch.empty((1, number_of_neurons), dtype=torch.float)
-        self.b = torch.ones((1, number_of_neurons), dtype=torch.float)
-        self.delta = torch.empty((1, number_of_neurons), dtype=torch.float)
+        self.y = torch.empty((BATCH_SIZE, number_of_neurons), dtype=torch.float)
+        self.b = torch.empty((1, number_of_neurons), dtype=torch.float)
+        torch.nn.init.uniform_(self.b, -0.001, 0.001)
+        self.delta = torch.empty((BATCH_SIZE, number_of_neurons), dtype=torch.float)
         self.next_layer = None
         self.activation_function = activation_function
 
     def calculate_delta_error(self):
-        yi = torch.mm(self.y, (1 - self.y.T))
-        sum_delta_w = torch.mm(self.next_layer.delta, self.next_layer.w.T)
-        self.delta = torch.mm(yi, sum_delta_w)
+        yi = torch.tensor([[e * (1 - e) for e in row] for row in self.y], dtype=torch.float)
+        sum_delta_w = torch.mm(self.next_layer.w, self.next_layer.delta.T)
+        self.delta = torch.multiply(yi, sum_delta_w.T)
 
 class EntryLayer(Layer):
     def __init__(self, number_of_neurons, activation_function, data_size):

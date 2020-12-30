@@ -6,7 +6,6 @@
 # ------------------------------------------------------------------------
 from neuron import *
 
-BATCH_SIZE = 5 # nombre de données lues à chaque fois.
 NB_EPOCHS = 10 # nombre de fois que la base de données sera lue.
 
 if __name__ == '__main__':
@@ -17,34 +16,33 @@ if __name__ == '__main__':
     nb_data_test = data_test.shape[0]
     indices = numpy.arange(nb_data_train, step=BATCH_SIZE)
 
-    # On stockera par la suite dans cette variable l'image en entrée.
-    # Une image est un vecteur de dimension [784], pour des raisons pratiques
-    # on souhaite avoir l'image sous la forme d'une matrice de dimension [1, 784].
-    data = torch.empty((1, data_train[0].shape[0]), dtype=torch.float)
-
     single_layer = SingleLayer(10, linear_activation, data_train[0].shape[0])
 
     for n in range(NB_EPOCHS):
+        # on mélange les (indices des) données
         numpy.random.shuffle(indices)
-
-        for image in indices:
-            data[0] = data_train[image:image+1]
-
+        # on lit toutes les données d'apprentissage
+        for i in indices:
+            # on récupère les entrées
+            x = data_train[i:i+BATCH_SIZE]
             # Activation des neuronnes couche par couche.
-            single_layer.activate(data)
-
-            # Calcul de l'erreur delta et rétroprogragation.
-            single_layer.calculate_delta_error(label_train[image:image+1])
-
+            single_layer.activate(x)
+            # on regarde les vrais labels
+            t = label_train[i:i+BATCH_SIZE]
+            # Calcul de l'erreur delta.
+            single_layer.calculate_delta_error(t)
             # Mise à jour des poids w.
-            single_layer.update_w(data)
+            single_layer.update_w(x)
+            single_layer.b += ETA * single_layer.delta.sum(axis=0)
 
-		# Test du modèle (on évalue la progression pendant l'apprentissage).
+        # Test du modèle (on évalue la progression pendant l'apprentissage).
         acc = 0.
-		# On lit toutes les donnéees de test.
+        # On lit toutes les donnéees de test.
         for i in range(nb_data_test):
-            data[0] = data_test[i:i+1]
-            single_layer.activate(data)
+            # on récupère l'entrée
+            x = data_test[i:i+1]
+            # on calcule la sortie du modèle
+            single_layer.activate(x)
             # On regarde le vrai label.
             t = label_test[i:i+1]
             # On regarde si la sortie est correcte.

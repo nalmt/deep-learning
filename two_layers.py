@@ -17,40 +17,36 @@ if __name__ == '__main__':
     nb_data_test = data_test.shape[0]
     indices = numpy.arange(nb_data_train, step=BATCH_SIZE)
 
-    # On stockera par la suite dans cette variable l'image en entrée.
-    # Une image est un vecteur de dimension [784], pour des raisons pratiques
-    # on souhaite avoir l'image sous la forme d'une matrice de dimension [1, 784].
-    data = torch.empty((1, data_train[0].shape[0]), dtype=torch.float)
-
     entry_layer = EntryLayer(3, sigmoid_activation, data_train[0].shape[0])
     output_layer = OutputLayer(10, linear_activation, entry_layer)
 
     entry_layer.next_layer = output_layer
 
     for n in range(NB_EPOCHS):
+        # on mélange les (indices des) données
         numpy.random.shuffle(indices)
-
-        for image in indices:
-            data[0] = data_train[image:image+1]
-
+        # on lit toutes les données d'apprentissage
+        for i in indices:
+            # on récupère les entrées
+            x = data_train[i:i+BATCH_SIZE]
             # Activation des neuronnes couche par couche.
-            entry_layer.activate(data)
+            entry_layer.activate(x)
             output_layer.activate()
-
+            # on regarde les vrais labels
+            t = label_train[i:i+BATCH_SIZE]
             # Calcul de l'erreur delta et rétroprogragation.
-            output_layer.calculate_delta_error(label_train[image:image+1])
+            output_layer.calculate_delta_error(t)
             entry_layer.calculate_delta_error()
-
             # Mise à jour des poids w.
             output_layer.update_w()
-            entry_layer.update_w(data)
+            entry_layer.update_w(x)
 
 		# Test du modèle (on évalue la progression pendant l'apprentissage).
         acc = 0.
 		# On lit toutes les donnéees de test.
         for i in range(nb_data_test):
-            data[0] = data_test[i:i+1]
-            entry_layer.activate(data)
+            x = data_test[i:i+1]
+            entry_layer.activate(x)
             output_layer.activate()
             # On regarde le vrai label.
             t = label_test[i:i+1]

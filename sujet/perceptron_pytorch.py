@@ -27,7 +27,6 @@ if __name__ == '__main__':
 	nb_data_test = data_test.shape[0]
 	indices = numpy.arange(nb_data_train,step=batch_size)
 
-
 	for n in range(nb_epochs):
 		# on mélange les (indices des) données
 		numpy.random.shuffle(indices)
