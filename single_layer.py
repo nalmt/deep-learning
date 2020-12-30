@@ -33,7 +33,6 @@ if __name__ == '__main__':
             single_layer.calculate_delta_error(t)
             # Mise à jour des poids w.
             single_layer.update_wb(x)
-            single_layer.b += ETA * single_layer.delta.sum(axis=0)
 
         # Test du modèle (on évalue la progression pendant l'apprentissage).
         acc = 0.
