@@ -17,7 +17,7 @@ if __name__ == '__main__':
     nb_data_test = data_test.shape[0]
     indices = numpy.arange(nb_data_train, step=BATCH_SIZE)
 
-    entry_layer = EntryLayer(3, sigmoid_activation, data_train[0].shape[0])
+    entry_layer = EntryLayer(30, sigmoid_activation, data_train[0].shape[0])
     output_layer = OutputLayer(10, linear_activation, entry_layer)
 
     entry_layer.next_layer = output_layer
@@ -38,8 +38,8 @@ if __name__ == '__main__':
             output_layer.calculate_delta_error(t)
             entry_layer.calculate_delta_error()
             # Mise à jour des poids w.
-            output_layer.update_w()
-            entry_layer.update_w(x)
+            output_layer.update_wb()
+            entry_layer.update_wb(x)
 
 		# Test du modèle (on évalue la progression pendant l'apprentissage).
         acc = 0.

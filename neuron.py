@@ -35,8 +35,9 @@ class EntryLayer(Layer):
         s = torch.mm(data, self.w) + self.b
         self.y = self.activation_function(s)
 
-    def update_w(self, data):
+    def update_wb(self, data):
         self.w += ETA * torch.mm(data.T, self.delta)
+        self.b += ETA * self.delta.sum(axis=0)
 
 class MiddleLayer(Layer):
     def __init__(self, number_of_neurons, activation_function, previous_layer):
@@ -49,8 +50,9 @@ class MiddleLayer(Layer):
         s = torch.mm(self.previous_layer.y, self.w) + self.b
         self.y = self.activation_function(s)
 
-    def update_w(self):
+    def update_wb(self):
         self.w += ETA * torch.mm(self.previous_layer.y.T, self.delta)
+        self.b += ETA * self.delta.sum(axis=0)
 
 class OutputLayer(MiddleLayer):
     def __init__(self, number_of_neurons, activation_function, previous_layer):
