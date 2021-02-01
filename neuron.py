@@ -1,6 +1,6 @@
 # coding: utf8
 # !/usr/bin/env python
-import gzip, numpy, torch
+import gzip, torch
 
 BATCH_SIZE = 5
 ETA = 0.00001 # taux d'apprentissage

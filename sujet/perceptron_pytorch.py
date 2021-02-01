@@ -16,7 +16,7 @@ if __name__ == '__main__':
 	
 	# on lit les données
 	((data_train,label_train),(data_test,label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
-
+	print(data_train.shape[1])
 	# on initialise le modèle et ses poids
 	w = torch.empty((data_train.shape[1],label_train.shape[1]),dtype=torch.float)
 	b = torch.empty((1,label_train.shape[1]),dtype=torch.float)

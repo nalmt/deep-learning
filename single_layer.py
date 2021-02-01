@@ -1,15 +1,12 @@
 # coding: utf8
 # !/usr/bin/env python
-# ------------------------------------------------------------------------
-# Perceptron multi-couches en pytorch (en utilisant juste les tenseurs)
-# Écrit par Nabil Lamrabet
-# ------------------------------------------------------------------------
 from neuron import *
 
-NB_EPOCHS = 10 # nombre de fois que la base de données sera lue.
+BATCH_SIZE = 5 # Nombre de données lues à chaque fois.
+NB_EPOCHS = 10 # Nombre de fois que la base de données sera lue.
 
 if __name__ == '__main__':
-    # on lit les données
+    # OOn lit les données.
     ((data_train, label_train), (data_test, label_test)) = torch.load(gzip.open('sujet/mnist.pkl.gz'))
 
     nb_data_train = data_train.shape[0]
@@ -19,15 +16,15 @@ if __name__ == '__main__':
     single_layer = SingleLayer(10, linear_activation, data_train[0].shape[0])
 
     for n in range(NB_EPOCHS):
-        # on mélange les (indices des) données
+        # On mélange les (indices des) données.
         numpy.random.shuffle(indices)
-        # on lit toutes les données d'apprentissage
+        # On lit toutes les données d'apprentissage.
         for i in indices:
-            # on récupère les entrées
+            # On récupère les entrées.
             x = data_train[i:i+BATCH_SIZE]
             # Activation des neuronnes couche par couche.
             single_layer.activate(x)
-            # on regarde les vrais labels
+            # On regarde les vrais labels.
             t = label_train[i:i+BATCH_SIZE]
             # Calcul de l'erreur delta.
             single_layer.calculate_delta_error(t)
@@ -38,9 +35,9 @@ if __name__ == '__main__':
         acc = 0.
         # On lit toutes les donnéees de test.
         for i in range(nb_data_test):
-            # on récupère l'entrée
+            # On récupère l'entrée.
             x = data_test[i:i+1]
-            # on calcule la sortie du modèle
+            # On calcule la sortie du modèle.
             single_layer.activate(x)
             # On regarde le vrai label.
             t = label_test[i:i+1]
